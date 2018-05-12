@@ -30,7 +30,10 @@ public class RedBlackTree <Key extends Comparable<? super Key>, Value>{
 
         
     }
-    
+    public int size(Node h){
+        if(h == null) return 0;
+        return Math.max(size(h.right),size(h.left))+1; 
+    }
     private boolean isRed(Node x)
     {
         if (x == null) return false;
