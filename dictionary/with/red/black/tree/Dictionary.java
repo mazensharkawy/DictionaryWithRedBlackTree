@@ -36,6 +36,7 @@ public class Dictionary extends javax.swing.JFrame {
         jTextField2 = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -62,6 +63,13 @@ public class Dictionary extends javax.swing.JFrame {
             }
         });
 
+        jButton4.setText("Remove");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -77,7 +85,10 @@ public class Dictionary extends javax.swing.JFrame {
                         .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton2))
-                    .addComponent(jButton3))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton3)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton4)))
                 .addContainerGap(43, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -92,7 +103,9 @@ public class Dictionary extends javax.swing.JFrame {
                     .addComponent(jButton1)
                     .addComponent(jButton2))
                 .addGap(18, 18, 18)
-                .addComponent(jButton3)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton3)
+                    .addComponent(jButton4))
                 .addContainerGap(179, Short.MAX_VALUE))
         );
 
@@ -112,12 +125,22 @@ public class Dictionary extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         String key = jTextField2.getText().toLowerCase();
-        RBT.put(RBT.root, key, null);
+        RBT.put(RBT.root,null, key, null);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         jTextField1.setText(""+RBT.size(RBT.root));
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        String key = jTextField2.getText().toLowerCase();
+        RedBlackTree.Node x = RBT.get(key);
+        if( x == null ) {
+            jTextField1.setText("ERROR: Not Found");
+            return ;
+        }
+        RBT.delete(x);
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -160,7 +183,7 @@ public class Dictionary extends javax.swing.JFrame {
                 while(in.hasNext()){
                     String line = in.nextLine();
                     System.out.println("reading "+ line+ " "+ line.length());
-                    dict.RBT.root = dict.RBT.put(dict.RBT.root, line, null);
+                    dict.RBT.root = dict.RBT.put(dict.RBT.root,null, line, null);
                 }
                 System.out.println("isRootNull: "+ (dict.RBT.root==null));
             } catch (FileNotFoundException ex) {
@@ -174,6 +197,7 @@ public class Dictionary extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables

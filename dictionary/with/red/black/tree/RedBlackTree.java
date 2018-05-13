@@ -20,8 +20,12 @@ public class RedBlackTree <Key extends Comparable<? super Key>, Value>{
         Key key;
         Value val;
         Node left, right;
+        Node parent;
         boolean color; // color of parent link
 
+        private void setParent(Node parent){
+            this.parent = parent;
+        }
         public Node(Key key, Value val, boolean color) {
             this.key = key;
             this.val = val;
@@ -30,14 +34,21 @@ public class RedBlackTree <Key extends Comparable<? super Key>, Value>{
 
         
     }
+    
     public int size(Node h){
         if(h == null) return 0;
         return Math.max(size(h.right),size(h.left))+1; 
     }
+    
     private boolean isRed(Node x)
     {
         if (x == null) return false;
         return x.color == RED;
+    }
+    boolean isLeft(Node x)					//added isLeft for Delete
+    {
+        if (x.left == null) return false;
+        return true ;
     }
     private Node rotateLeft(Node h)
     {
@@ -68,12 +79,17 @@ public class RedBlackTree <Key extends Comparable<? super Key>, Value>{
         h.left.color = BLACK;
         h.right.color = BLACK;
     }
-    public Node put(Node h, Key key, Value val)
+    
+    public Node put(Node h, Node parent, Key key, Value val)
     {
-        if (h == null) return new Node(key, val, RED);
+        if (h == null) {
+            Node x = new Node(key, val, RED);
+            x.setParent(parent); 
+            return x;
+        }
         int cmp = key.compareTo(h.key);
-        if (cmp < 0) h.left = put(h.left, key, val);
-        else if (cmp > 0) h.right = put(h.right, key, val);
+        if (cmp < 0) h.left = put(h.left, h, key, val);
+        else if (cmp > 0) h.right = put(h.right, h, key, val);
         else if (cmp == 0) {
             System.out.println("ERROR: Word already in the dictionary!");
 //            h.val = val;
@@ -95,4 +111,132 @@ public class RedBlackTree <Key extends Comparable<? super Key>, Value>{
         }
         return null;
     }
+    
+   
+    
+    /* Up coming functions for For Delete*/
+    
+    void Transplant(Node u, Node v)
+    {
+    	if(u.parent==null) 
+    		root=v;
+    	else if (u==u.parent.left)
+    		u.parent.left=v;
+    	else u.parent.right=v;
+    }
+    
+    Node minTree(Node x) {
+        while (x.left != null) {
+            x = x.left;
+        }
+        return x;
+    }
+    void delete(Node z) {
+    	Node y= z,x;
+    	Boolean yOrigin = y.color;
+    	if(z.left==null) 
+    	{
+    		x=z.right;
+    		Transplant(z,z.left);
+    	}
+    	else if(z.right==null)
+    	{
+    		x=z.left;
+    		Transplant(z,z.left);
+    	}
+    	else
+    	{
+    		y=minTree(z.right);
+    		yOrigin=y.color;
+    		x=y.right;
+    	}
+    	if(y.parent==z)
+    	{
+    		x.parent=y;
+    	}
+    	else
+    	{
+            Transplant(y,y.right);
+            y.right=z.right;
+            System.out.println("y.right: "+y.right);
+            System.out.println("y.parent: "+y.parent);
+            if(y.right != null){
+                y.right.parent=y;
+            }
+    	}
+    	if(yOrigin==BLACK)
+    	{
+            deleteFixup(x);
+    	}
+    }
+    void deleteFixup(Node x)
+    {
+    	while(x!=root && x.color==BLACK) 
+    	{
+    		Node w;
+    		if(isLeft(x))					//isLeft add up added and parent needs to be set with value
+    		{
+    			w=x.parent.right;
+    			if(isRed(x))
+    			{
+    				w.color=BLACK;
+    				x.parent.color=RED;
+    				rotateLeft(x.parent);
+    				w=x.parent.right;
+    			}
+    			if(w.left.color==BLACK && w.right.color==BLACK)
+    			{
+    				w.color=RED;
+    				x=x.parent;
+    			}
+    			else
+    			{
+    				if(w.right.color==BLACK)
+    				{
+    					w.left.color=BLACK;
+    					w.color=RED;
+    					rotateRight(w);
+    					w=x.parent.right;
+    				}
+    				w.color=x.parent.color;
+    				x.parent.color=BLACK;
+    				w.right.color=BLACK;
+    				rotateLeft(x.parent);
+    				x=root;
+    			}
+    		}
+    		else
+    		{
+    			w=x.parent.left;
+    			if(isRed(w))
+    			{
+    				w.color=BLACK;
+    				x.parent.color=RED;
+    				rotateLeft(x.parent);
+    				w=x.parent.left;
+    			}
+    			if(w.right.color==BLACK && w.left.color==BLACK)
+    			{
+    				w.color=RED;
+    				x=x.parent;
+    			}
+    			else 
+    			{
+    				if(w.left.color==BLACK)
+    				{
+    					w.left.color=BLACK;
+    					w.color=RED;
+    					rotateLeft(w);
+    					w=x.parent.left;
+    				}
+    				w.color=x.parent.color;
+    				x.parent.color=BLACK;
+    				w.left.color=BLACK;
+    				rotateRight(x.parent);
+    				x=root;
+    			}
+    		}
+    	}
+    	x.color=BLACK;
+    }   
 }
